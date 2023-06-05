@@ -2,6 +2,9 @@
 
 This tutorial will take you through a step by step guide to building, deploying and indexing a Greeter smart contract using Envio and Hardhat. 
 
+
+<!-- Table of contents -->
+
 ## Background
 
 ### [Greeter contract](https://github.com/PaulRBerg/hardhat-template)
