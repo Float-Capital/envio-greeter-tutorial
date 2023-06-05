@@ -2,12 +2,23 @@
 
 This tutorial will take you through a step by step guide to building, deploying and indexing a Greeter smart contract using Envio and Hardhat. 
 
+The final code for this tutorial can be seen [here](https://github.com/Float-Capital/envio-greeter-tutorial/)
+
 
 <!-- Table of contents -->
 
+- Dive into the terminal and make new project folder `mkdir envio-greeter-tutorial`
+- Clone greeter [repo](https://github.com/PaulRBerg/hardhat-template) 
+- Make a folder for your indexer - `mkdir envio-indexer`
+- Open a second terminal so that you don't have to switch directories the whole time 
+- npx envio init
+- npx envio codegen
+- pnpm start
+- 
+
 ## Background
 
-### [Greeter contract](https://github.com/PaulRBerg/hardhat-template)
+### [Greeter contract](https://github.com/Float-Capital/hardhat-template)
 
 The Greeter contract is a very simple smart contract that allows user to write a greeting message on the blockchain.
 
@@ -19,17 +30,49 @@ Hardhat is a development toolkit for smart contracts. In this tutorial we will b
 
 Envio is a framework for developing a backend to index and aggregate blockchain data into a graphQL query-able database. 
 
-
 ## Pre-requisites
 
-1. [<ins>Node.js</ins>](https://nodejs.org/en/download/current)
+1. [<ins>Node.js</ins>](https://nodejs.org/en/download/current) we recommend using something like [fnm](https://github.com/Schniz/fnm) or [nvm](https://github.com/nvm-sh/nvm) to install Node
 1. [<ins>pnpm</ins>](https://pnpm.io/installation)
 1. [<ins>Docker Desktop</ins>](https://www.docker.com/products/docker-desktop/)
 
-## Install Envio
+### Install Envio
 ```bash
 npm i -g envio
 ```
+
+## Step by step instructions
+
+Here is an end to end list of unexplained commands
+
+```bash
+mkdir envio-greeter-tutorial
+cd envio-greeter-tutorial
+mkdir envio-indexer
+cd envio-indexer
+npx envio init
+> Greeter
+> Javascript
+docker-compose down -v
+docker-compose up -d
+cd ..
+git clone https://github.com/Float-Capital/hardhat-template.git
+cd hardhat-template
+rm -r -f deployments
+pnpm i
+cp .env.example .env
+*Need to add ganache to docker compose thats copied across :/
+pnpm hardhat deploy
+pnpm hardhat task:setGreeting --account "1" --greeting "Hola"
+pnpm hardhat task:setGreeting --account "2" --greeting "gm"
+cd ../envio-indexer
+npx envio codegen
+pnpm start
+./generated/register_tables_with_hasura.sh
+open http://localhost:8080
+```
+
+
 
 ## Start a Greeter project
 `cd` into your project directory and run `envio init` command.
@@ -92,7 +135,8 @@ pnpm start
 This task will require an account for the user [1-10] and a greeting string and can be called by running the following:
 ```bash
 cd contracts
-pnpm hardhat task:setGreeting --account "#" --greeting "Hola"
+pnpm hardhat task:setGreeting --account "1" --greeting "Hola"
+pnpm hardhat task:setGreeting --account "2" --greeting "gm"
 ```
 
 `task:clearGreeting` will clear the latest greeting for a user.
