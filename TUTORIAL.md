@@ -5,16 +5,25 @@ This tutorial will take you through a step by step guide to building, deploying 
 The final code for this tutorial can be seen [here](https://github.com/Float-Capital/envio-greeter-tutorial/)
 
 
-<!-- Table of contents -->
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
-- Dive into the terminal and make new project folder `mkdir envio-greeter-tutorial`
-- Clone greeter [repo](https://github.com/PaulRBerg/hardhat-template) 
-- Make a folder for your indexer - `mkdir envio-indexer`
-- Open a second terminal so that you don't have to switch directories the whole time 
-- npx envio init
-- npx envio codegen
-- pnpm start
-- 
+- [Background](#background)
+  * [Greeter contract](#greeter-contract)
+  * [Hardhat](#hardhat)
+  * [Envio](#envio)
+- [Pre-requisites](#pre-requisites)
+  * [Environment tooling](#environment-tooling)
+  * [Install Envio](#install-envio)
+- [Step by step instructions](#step-by-step-instructions)
+  * [1. Create the project folders](#1-create-the-project-folders)
+  * [2. Initialize the indexer](#2-initialize-the-indexer)
+  * [3. Run our docker containers for local development](#3-run-our-docker-containers-for-local-development)
+  * [4. Clone the contracts repository](#4-clone-the-contracts-repository)
+  * [5. Deploy the contracts](#5-deploy-the-contracts)
+  * [6. Start indexing!](#6-start-indexing)
+  * [A couple extras](#a-couple-extras)
+
+<!-- TOC end -->
 
 ## Background
 
@@ -32,6 +41,8 @@ Envio is a framework for developing a backend to index and aggregate blockchain 
 
 ## Pre-requisites
 
+### Environment tooling
+
 1. [<ins>Node.js</ins>](https://nodejs.org/en/download/current) we recommend using something like [fnm](https://github.com/Schniz/fnm) or [nvm](https://github.com/nvm-sh/nvm) to install Node
 1. [<ins>pnpm</ins>](https://pnpm.io/installation)
 1. [<ins>Docker Desktop</ins>](https://www.docker.com/products/docker-desktop/)
@@ -43,7 +54,7 @@ npm i -g envio
 
 ## Step by step instructions
 
-Here is an end to end list of unexplained commands
+Here is an end to end list of unexplained terminal commands, we will break this down in more detail below.
 
 ```bash
 mkdir envio-greeter-tutorial
@@ -70,92 +81,89 @@ npx envio codegen
 pnpm start
 ./generated/register_tables_with_hasura.sh
 open http://localhost:8080
+cd ../hardhat-template
+pnpm hardhat task:setGreeting --account "2" --greeting "realtime indexing"
 ```
 
+In human english, we will create the project folders, initialize the indexer, run our docker containers for local development, clone the contracts repository, deploy the contracts, and then start indexing!
 
+### 1. Create the project folders
 
-## Start a Greeter project
-`cd` into your project directory and run `envio init` command.
-Then choose `Greeter` template and a language of choice to define the Event Handler.
-
-This will auto-generate the setup files required for generating the indexing code.
-More information on the setup files can be found in [Envio documentation](https://docs.envio.dev/docs/overview)
-
-## Start a docker container
-In order to run the indexer locally, you will need to spin up a docker container for:
-- postGres server
-- Ganache (local blockchain)
-
-First open Docker Desktop.
-
-You can first remove any stale data in docker by running:
 ```bash
-docker-compose down -v
+mkdir envio-greeter-tutorial
+cd envio-greeter-tutorial
+mkdir envio-indexer
+cd envio-indexer
 ```
 
-Then restart the docker by running:
+### 2. Initialize the indexer
+
+```bash
+npx envio init
+> Greeter
+> Javascript
+```
+
+### 3. Run our docker containers for local development
+
 ```bash
 docker-compose up -d
 ```
 
-## Auto-generate indexing files
-Now you are ready to generate the files required for indexing, by running:
+> Dev note: 📢 run `docker-compose down -v` if you have stale containers running already
+
+### 4. Clone the contracts repository
+
+First lets move back to the root of our project directory
 ```bash
-envio codegen
+cd ..
 ```
 
-This will auto-generate all the indexing files, as per specifications outline in the setup files.
-All indexing files are written in Rescript, and they **do not** need to be modified to run the indexer.
-
-## Deploy the smart contract onto ganache using HardHat
-Copy *contracts* folder into your project folder.
-`cd` into *contracts* and change the name of `.env.example` file to `.env`.
-
-Follow instructions below:
+```bash
+git clone https://github.com/Float-Capital/hardhat-template.git
+cd hardhat-template
 ```
-cd contracts
-rm -r -f deployments
+
+### 5. Deploy the contracts
+
+```bash 
+pnpm i
+cp .env.example .env
 pnpm hardhat deploy
-```
-Note that this will delete the previous deployment of the smart contract and re-deploy to prevent `node synced status` errors.
-
-Check that the address of the deployment aligns with the address of smart contract in the `config.yaml` file, and if not, make sure they are the same.
-
-More information on how to deploy contracts using Hardhat can be found [here](https://hardhat.org/hardhat-runner/docs/guides/deploying).
-
-## Starting the indexer
-Start the indexer by running:
-```
-pnpm start
-```
-
-## Running tasks
-`task:setGreeting` will create a greeting for a user.
-
-This task will require an account for the user [1-10] and a greeting string and can be called by running the following:
-```bash
-cd contracts
 pnpm hardhat task:setGreeting --account "1" --greeting "Hola"
 pnpm hardhat task:setGreeting --account "2" --greeting "gm"
 ```
 
-`task:clearGreeting` will clear the latest greeting for a user.
+> Dev note: 📢 run `rm -r -f deployments` to delete prior deployment data if you are re-deploying the contracts at a later point.
 
-This task only requires the account of user to be passed and can be called by running the following:
+> Dev note: 📢 Check that the address of the deployment aligns with the address of smart contract in the `config.yaml` file, and if not, make sure they are the same.
+
+### 6. Start indexing!
+
+First lets get back to the indexer directory
 ```bash
-cd contracts
-pnpm hardhat task:clearGreeting --account "#"
+cd ../envio-indexer
 ```
 
-## Viewing the results
+```bash
+npx envio codegen # this will auto-generate all the indexing files, based on the setup files (config.yaml, schema.graphql).
+pnpm start # This will run the indexer and index events based on the rules set in the src/EventHandler file
+```
 
-To view the data in the database, run
+> All indexing files are written in Rescript, and they **do not** need to be modified to run the indexer.
+
+### A couple extras
+
+Register the tables with hasura and open the dashboard to view the data
 ```bash
 ./generated/register_tables_with_hasura.sh
+open http://localhost:8080
 ```
 
-Navigate to http://localhost:8080/console to view local Hasura.
+The password is 'testing' and the tables can be viewed in the 'data' tab or queried from the playground
 
-Admin-secret for Hasura is `testing` 
 
-Alternatively you can open the file `index.html` for a cleaner experience (no Hasura stuff). Unfortunately, Hasura is currently not configured to make the data public.
+You can run additional tasks from the `hardhat-template` directory to see the indexer index live events
+```bash
+pnpm hardhat task:setGreeting --account "2" --greeting "realtime indexing"
+```
