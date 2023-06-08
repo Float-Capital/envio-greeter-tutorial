@@ -1,10 +1,6 @@
 # Greeter Envio Hardhat tutorial
 
-## Pre-requisites
-
-1. [<ins>Node.js</ins>](https://nodejs.org/en/download/current)
-1. [<ins>pnpm</ins>](https://pnpm.io/installation)
-1. [<ins>Docker Desktop</ins>](https://www.docker.com/products/docker-desktop/)
+The complete guide to this tutorial can be found [here](https//docs.envio.dev/docs/greeter-hardhat-tutorial)
 
 ## Indexer Requirements
 
