@@ -1,3 +1,11 @@
+# Greeter Envio Hardhat tutorial
+
+## Pre-requisites
+
+1. [<ins>Node.js</ins>](https://nodejs.org/en/download/current)
+1. [<ins>pnpm</ins>](https://pnpm.io/installation)
+1. [<ins>Docker Desktop</ins>](https://www.docker.com/products/docker-desktop/)
+
 ## Indexer Requirements
 
 The following files are required to use the Indexer:
