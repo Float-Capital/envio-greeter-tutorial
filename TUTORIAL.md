@@ -114,7 +114,7 @@ docker-compose up -d
 
 ### 4. Clone the contracts repository
 
-First lets move back to the root of our project directory
+First, lets move back to the root of our project directory
 ```bash
 cd ..
 ```
